@@ -1,6 +1,7 @@
 const mongo = require('mongodb').MongoClient
 
 const mongoUri = process.env.MONGO_URI
+const shortUrl = process.env.SHORT_URL
 
 const getUrl = (urlId, res) => {
    mongo.connect(mongoUri, (err, db) => {
@@ -11,7 +12,6 @@ const getUrl = (urlId, res) => {
       collection.findOne(
       {_id: parseInt(urlId, 10)}
     ).then(doc => {
-       console.log(doc)
        db.close()
        res.redirect(doc.url)
     }).catch(err => console.log(err))
@@ -32,7 +32,7 @@ const connect = (url, res) => {
             collection.insertMany(
                [{_id: 'url info', numIds: 0}, {_id: 0, url}]
             ).then(() => {
-               const urlsToSend = {normal: url, shortened: 'https://nickel-value.glitch.me/0'}
+               const urlsToSend = {normal: url, shortened: shortUrl + '0'}
                db.close()
                res.end(JSON.stringify(urlsToSend))
             }).catch(err => console.log(err))
@@ -44,7 +44,7 @@ const connect = (url, res) => {
                collection.insert({_id: urlId, url})
                return urlId
             }).then(urlId => {
-               const urlToSend = {normal: url, shortened: 'https://nickel-value.glitch.me/' + urlId}
+               const urlToSend = {normal: url, shortened: shortUrl + urlId}
                res.end(JSON.stringify(urlToSend))
                db.close()
             }).catch(err => console.log(err))
